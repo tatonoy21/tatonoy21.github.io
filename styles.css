@@ -192,6 +192,26 @@ button:hover{
   background:#09531b;
 }
 
+.quiz-card{
+  display:block;
+}
+
+.quiz-extra{
+  margin-top:20px;
+  padding-top:20px;
+  border-top:1px solid #e3efe7;
+}
+
+.quiz-extra p{
+  margin:12px 0 8px;
+}
+
+#quiz-result{
+  margin-top:12px;
+  color:#0b6623;
+  font-size:1rem;
+}
+
 ul{
   padding-left:20px;
   margin-bottom:20px;

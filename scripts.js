@@ -18,6 +18,18 @@ function answer(number) {
     }
 }
 
+function showQuizFeedback(message, isCorrect) {
+    const result = document.getElementById("result");
+    if (!result) {
+        return;
+    }
+
+    result.innerHTML = isCorrect
+        ? `✅ ${message}`
+        : `❌ ${message}`;
+    result.style.color = isCorrect ? "green" : "red";
+}
+
 // Ask before opening an external website
 function openWebsite(url){
     const openLink = confirm("You are leaving Cricket Learning Hub. Continue?");

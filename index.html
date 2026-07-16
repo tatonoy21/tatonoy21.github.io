@@ -320,13 +320,31 @@
 
 <section id="quiz">
   <h2>🎯 Cricket Quiz</h2>
-  <div class="card">
+  <div class="card quiz-card">
     <h3>How many balls are there in one over?</h3>
     <button onclick="answer(4)">4</button>
     <button onclick="answer(5)">5</button>
     <button onclick="answer(6)">6</button>
     <button onclick="answer(8)">8</button>
     <h2 id="result"></h2>
+
+    <div class="quiz-extra">
+      <h3>More Quick Questions</h3>
+      <p><strong>1.</strong> A boundary scored after the ball bounces is worth how many runs?</p>
+      <button onclick="showQuizFeedback('4 runs', true)">4 runs</button>
+      <button onclick="showQuizFeedback('6 runs', false)">6 runs</button>
+      <button onclick="showQuizFeedback('2 runs', false)">2 runs</button>
+
+      <p><strong>2.</strong> Which player stands behind the stumps?</p>
+      <button onclick="showQuizFeedback('Wicket keeper', true)">Wicket keeper</button>
+      <button onclick="showQuizFeedback('Umpire', false)">Umpire</button>
+      <button onclick="showQuizFeedback('Referee', false)">Referee</button>
+
+      <p><strong>3.</strong> What does a bowler mainly try to do?</p>
+      <button onclick="showQuizFeedback('Take wickets', true)">Take wickets</button>
+      <button onclick="showQuizFeedback('Dance', false)">Dance</button>
+      <button onclick="showQuizFeedback('Sleep', false)">Sleep</button>
+    </div>
   </div>
 </section>
 
