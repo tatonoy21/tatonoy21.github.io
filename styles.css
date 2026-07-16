@@ -240,10 +240,12 @@ li{
   align-items:start;
 }
 
+.field-visual img,
 .field-visual svg{
   width:100%;
   height:auto;
   display:block;
+  border-radius:12px;
 }
 
 .position-grid{
