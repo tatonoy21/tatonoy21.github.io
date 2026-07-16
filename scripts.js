@@ -61,21 +61,62 @@ const cricketQuestions = [
 
 let currentQuestionIndex = 0;
 let score = 0;
-let gameState = "ready";
+let gameState = "playing";
 let fallingBalls = [];
-let batX = 0;
+let batX = 280;
 let feedbackMessage = "Move your mouse to guide the bat and catch the correct answer.";
-let nextRoundTimer = 0;
+let transitionTimer = 0;
+let canvas = null;
+let ctx = null;
+let lastFrameTime = 0;
+const gameWidth = 560;
+const gameHeight = 360;
 
 function setupGame() {
-    const canvas = createCanvas(560, 360);
-    canvas.parent("game-container");
-    canvas.elt.style.maxWidth = "100%";
-    textFont("Arial");
-    resetRound();
+    const container = document.getElementById("game-container");
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+    canvas = document.createElement("canvas");
+    canvas.width = gameWidth * 2;
+    canvas.height = gameHeight * 2;
+    canvas.style.width = "100%";
+    canvas.style.height = "auto";
+    canvas.style.maxWidth = "100%";
+    canvas.style.display = "block";
+    canvas.style.borderRadius = "12px";
+    container.appendChild(canvas);
+
+    ctx = canvas.getContext("2d");
+    ctx.setTransform(2, 0, 0, 2, 0, 0);
+
+    canvas.addEventListener("mousemove", handlePointerMove);
+    canvas.addEventListener("touchmove", handlePointerMove, { passive: false });
+
+    updateGameHud();
+    startRound();
+    lastFrameTime = performance.now();
+    requestAnimationFrame(loop);
 }
 
-function resetRound() {
+function handlePointerMove(event) {
+    if (!canvas) {
+        return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.touches ? event.touches[0].clientX : event.clientX;
+    const offsetX = x - rect.left;
+    batX = Math.min(Math.max(offsetX / rect.width * gameWidth, 70), gameWidth - 70);
+
+    if (event.touches) {
+        event.preventDefault();
+    }
+}
+
+function startRound() {
     if (currentQuestionIndex >= cricketQuestions.length) {
         gameState = "finished";
         feedbackMessage = `You finished the challenge with ${score} points! Refresh to play again.`;
@@ -101,7 +142,7 @@ function resetRound() {
 
 function nextRound() {
     currentQuestionIndex += 1;
-    resetRound();
+    startRound();
 }
 
 function updateGameHud() {
@@ -123,50 +164,39 @@ function updateGameHud() {
     }
 }
 
-function drawGame() {
-    background(245, 250, 247);
-    noStroke();
-
-    fill(237, 247, 240);
-    rect(20, 30, width - 40, height - 60, 18);
-
-    fill(11, 102, 35);
-    textSize(18);
-    textAlign(CENTER, CENTER);
-    text(cricketQuestions[currentQuestionIndex].prompt, width / 2, 50);
-
-    fill(35, 90, 60);
-    textSize(12);
-    text(feedbackMessage, width / 2, 78);
-
-    batX = constrain(mouseX, 70, width - 70);
-    drawBat();
+function loop(currentTime) {
+    const deltaTime = (currentTime - lastFrameTime) / 1000 || 0.016;
+    lastFrameTime = currentTime;
 
     if (gameState === "transition") {
-        nextRoundTimer -= deltaTime / 1000;
-        if (nextRoundTimer <= 0) {
+        transitionTimer -= deltaTime;
+        if (transitionTimer <= 0) {
             nextRound();
         }
     }
 
-    if (gameState !== "playing") {
-        return;
+    if (gameState === "playing") {
+        updateBalls(deltaTime);
     }
 
+    drawGame();
+    requestAnimationFrame(loop);
+}
+
+function updateBalls(deltaTime) {
     let missedRound = false;
 
     for (let i = fallingBalls.length - 1; i >= 0; i -= 1) {
         const ball = fallingBalls[i];
-        ball.y += ball.speed;
-        drawBall(ball);
+        ball.y += ball.speed * (60 * deltaTime);
 
-        if (ball.y + ball.size / 2 > height - 70 && ball.x > batX - 55 && ball.x < batX + 55) {
+        if (ball.y + ball.size / 2 > gameHeight - 70 && ball.x > batX - 55 && ball.x < batX + 55) {
             if (ball.label === cricketQuestions[currentQuestionIndex].correct) {
                 score += 10;
                 feedbackMessage = `Great catch! ${cricketQuestions[currentQuestionIndex].fact}`;
                 updateGameHud();
                 gameState = "transition";
-                nextRoundTimer = 1.2;
+                transitionTimer = 1.2;
                 fallingBalls = [];
                 return;
             }
@@ -174,12 +204,12 @@ function drawGame() {
             feedbackMessage = `Not that one. The correct answer is ${cricketQuestions[currentQuestionIndex].correct}.`;
             updateGameHud();
             gameState = "transition";
-            nextRoundTimer = 1.2;
+            transitionTimer = 1.2;
             fallingBalls = [];
             return;
         }
 
-        if (ball.y > height + 20) {
+        if (ball.y > gameHeight + 20) {
             missedRound = true;
         }
     }
@@ -188,40 +218,67 @@ function drawGame() {
         feedbackMessage = `The correct answer was ${cricketQuestions[currentQuestionIndex].correct}.`;
         updateGameHud();
         gameState = "transition";
-        nextRoundTimer = 1.2;
+        transitionTimer = 1.2;
     }
 }
 
+function drawGame() {
+    if (!ctx) {
+        return;
+    }
+
+    ctx.clearRect(0, 0, gameWidth, gameHeight);
+    ctx.fillStyle = "#f5faf7";
+    ctx.fillRect(0, 0, gameWidth, gameHeight);
+
+    ctx.fillStyle = "#edf7ee";
+    ctx.fillRect(20, 30, gameWidth - 40, gameHeight - 60);
+
+    ctx.fillStyle = "#0b6623";
+    ctx.font = "18px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(cricketQuestions[currentQuestionIndex].prompt, gameWidth / 2, 48);
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#345";
+    ctx.fillText(feedbackMessage, gameWidth / 2, 76);
+
+    drawBat();
+
+    fallingBalls.forEach((ball) => drawBall(ball));
+}
+
 function drawBat() {
-    fill(11, 102, 35);
-    rect(batX - 55, height - 60, 110, 16, 8);
-    fill(255, 215, 0);
-    rect(batX - 45, height - 72, 90, 16, 8);
+    ctx.fillStyle = "#0b6623";
+    ctx.beginPath();
+    ctx.roundRect(batX - 55, gameHeight - 60, 110, 16, 8);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffd700";
+    ctx.beginPath();
+    ctx.roundRect(batX - 45, gameHeight - 72, 90, 16, 8);
+    ctx.fill();
 }
 
 function drawBall(ball) {
-    fill(255, 255, 255);
-    circle(ball.x, ball.y, ball.size);
-    fill(11, 102, 35);
-    textSize(16);
-    textAlign(CENTER, CENTER);
-    text(ball.label, ball.x, ball.y);
-}
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.size / 2, 0, Math.PI * 2);
+    ctx.fill();
 
-function setup() {
-    setupGame();
-}
-
-function draw() {
-    drawGame();
-}
-
-function windowResized() {
-    resizeCanvas(560, 360);
+    ctx.fillStyle = "#0b6623";
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(ball.label, ball.x, ball.y);
 }
 
 if (typeof window !== "undefined") {
-    window.setup = setup;
-    window.draw = draw;
-    window.windowResized = windowResized;
+    document.addEventListener("DOMContentLoaded", setupGame);
+    window.addEventListener("resize", () => {
+        if (canvas) {
+            canvas.style.width = "100%";
+            canvas.style.height = "auto";
+        }
+    });
 }
