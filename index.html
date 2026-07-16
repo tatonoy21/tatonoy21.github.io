@@ -17,6 +17,7 @@
 
 <nav>
   <a href="#about">About</a>
+  <a href="#game">Game</a>
   <a href="#equipment">Equipment</a>
   <a href="#play">How to Play</a>
   <a href="#rules">Rules</a>
@@ -30,6 +31,21 @@
   <h2>Welcome to Cricket!</h2>
   <p>Cricket is a team sport where batters score runs, bowlers take wickets, and fielders control the game with smart positioning and quick reactions.</p>
   <button onclick="scrollToSection()">Start Learning</button>
+</section>
+
+<section id="game" class="game-section">
+  <div class="game-card">
+    <div class="game-copy">
+      <h2>🎮 Cricket Catch Challenge</h2>
+      <p>Catch the correct answer as it falls and build your score while learning essential cricket facts.</p>
+      <div class="game-stats">
+        <div><strong>Score</strong><span id="score-display">0</span></div>
+        <div><strong>Round</strong><span id="round-display">1/5</span></div>
+      </div>
+      <p id="game-tip">Move your mouse to guide the bat and catch the correct answer.</p>
+    </div>
+    <div id="game-container" class="game-canvas-card"></div>
+  </div>
 </section>
 
 <section id="about">

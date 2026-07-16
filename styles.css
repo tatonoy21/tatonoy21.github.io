@@ -82,6 +82,65 @@ nav a:hover{
   background:#09531b;
 }
 
+.game-section{
+  padding-top:20px;
+}
+
+.game-card{
+  background:white;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(11, 102, 35, 0.14);
+  display:grid;
+  gap:20px;
+  grid-template-columns:minmax(230px, 0.9fr) 1.1fr;
+  align-items:center;
+}
+
+.game-copy h2{
+  margin-bottom:12px;
+}
+
+.game-copy p{
+  margin-bottom:10px;
+}
+
+.game-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:16px 0;
+}
+
+.game-stats div{
+  background:#eef8f1;
+  padding:10px 12px;
+  border-radius:999px;
+  color:#0b6623;
+  font-size:0.95rem;
+}
+
+.game-stats span{
+  display:inline-block;
+  margin-left:6px;
+  font-weight:700;
+}
+
+.game-canvas-card{
+  background:linear-gradient(135deg, #f4fff7 0%, #e1f5e7 100%);
+  border-radius:16px;
+  padding:12px;
+  min-height:360px;
+}
+
+#game-container canvas{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(11, 102, 35, 0.12);
+}
+
 section{
   padding:60px 10%;
 }
@@ -222,6 +281,10 @@ footer{
 @media (max-width: 768px){
   section{
     padding:50px 5%;
+  }
+
+  .game-card{
+    grid-template-columns:1fr;
   }
 
   .fielding-layout{
